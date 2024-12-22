@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class NewsApiController extends AbstractController
 {
     public function __construct(
-        private NewsApiService $news-apiService,
+        private NewsApiService $newsApiService,
         private $simpleDatatablesInstalled = false
     )
     {
@@ -24,7 +24,7 @@ class NewsApiController extends AbstractController
             throw new \LogicException("This page requires SimpleDatatables\n composer req survos/simple-datatables-bundle");
         }
     }
-    #[Route('/zones', name: 'survos_news-api_zones', methods: ['GET'])]
+    #[Route('/language', name: 'survos_news_api_languages', methods: ['GET'])]
     #[Template('@SurvosNewsApi/zones.html.twig')]
     public function zones(
     ): Response|array

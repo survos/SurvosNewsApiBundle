@@ -13,14 +13,14 @@ use Zenstruck\Console\IO;
 use Zenstruck\Console\RunsCommands;
 use Zenstruck\Console\RunsProcesses;
 
-#[AsCommand('news-api:list', 'list news-api files')]
+#[AsCommand('news-api:list', 'list news-api sources and articles (various endpoints)')]
 final class NewsApiListCommand extends InvokableServiceCommand
 {
     use RunsCommands;
     use RunsProcesses;
 
     public function __construct(
-        private readonly NewsApiService $news-apiService,
+        private readonly NewsApiService $newsApiService,
     )
     {
         parent::__construct();
@@ -28,22 +28,17 @@ final class NewsApiListCommand extends InvokableServiceCommand
 
     public function __invoke(
         IO                                                                                          $io,
-        #[Argument(description: 'path name within zone')] string        $path='',
-        #[Option(name: 'zone', description: 'zone name')] ?string $zoneName = null,
-        #[Option(name: 'zones', description: 'list the zone names')] bool $listZones = false,
+        #[Argument(description: 'endpoint (source, search)')] string        $endpoint='',
+        #[Option(description: 'filter by top')] bool $top = false,
+        #[Option(description: 'search string')] ?string $q=null,
+        #[Option(description: '2-letter language code')] string $locale='en',
 
     ): int
     {
-        if ($listZones) {
-            // if no zone, we could prompt
-            if (!$baseApi = $this->news-apiService->getBaseApi()) {
-                $io->error("Listing zones requires a base api key");
-                return self::FAILURE;
-            }
-
-            $zones = $baseApi->listStorageZones()->getContents();
+        if ($q) {
+            $articles = $this->newsApiService->loadArticles($locale, $q);
             $table = new Table($io);
-            $table->setHeaderTitle($zoneName . "/" . $path);
+            $table->setHeaderTitle($locale . "/" . $q);
             $headers = ['Name', 'StorageUsed','FilesStored','Id'];
             $table->setHeaders($headers);
             foreach ($zones as $zone) {

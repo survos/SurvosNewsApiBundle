@@ -70,6 +70,8 @@ class NewsApiService
         $articles = $this->cache->get($key, fn(CacheItem $cacheItem) =>
             $this->newsApi->getEverything($q, language: $language)
         );
+        dd($articles);
+        return $articles;
         foreach ($articles->articles as $idx => $a) {
             $s = $a->source;
             if (!$s->id) {
